@@ -1,2 +1,6 @@
-package Tasks;public enum Status {
+package Tasks;
+public enum Status {
+    NEW,
+    IN_PROGRESS,
+    DONE
 }
