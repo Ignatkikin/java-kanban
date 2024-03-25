@@ -13,7 +13,7 @@ public class TaskManager {
     protected HashMap<Integer, Epic> epics;
     protected HashMap<Integer, Subtask> subTasks;
 
-    public int counter = 0;
+    private int counter = 0;
 
     public TaskManager() {
         this.tasks = new HashMap<>();
