@@ -8,8 +8,8 @@ import tasks.Task;
 public class Main {
 
     public static void main(String[] args) {
-        System.out.println("Поехали!");
-        TaskManager manager = new TaskManager();
+     /*   System.out.println("Поехали!");
+        InMemoryTaskManager manager = new InMemoryTaskManager();
 
         System.out.println("Проверяем Task, Epic, SubTask:");
 
@@ -141,5 +141,7 @@ public class Main {
         }
         System.out.println("Удаляем все Эпики");
         manager.deleteAllEpics();
+
+      */
     }
 }
