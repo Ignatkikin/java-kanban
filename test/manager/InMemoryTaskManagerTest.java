@@ -2,6 +2,7 @@ package manager;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import tasks.Epic;
 import tasks.Status;
@@ -13,10 +14,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class InMemoryTaskManagerTest {
 
-    static TaskManager manager = Managers.getDefault();
+    static TaskManager manager;
 
-    @BeforeAll
-    static void creatingAndAddingTaskSubTaskEpic() {
+    @BeforeEach
+    void creatingAndAddingTaskSubTaskEpic() {
+        manager = Managers.getDefault();
         Task task1 = new Task("Задача 1", "Выучить теорию 5 спринта");
         Task task2 = new Task("Задача 2", "Сдать тз5");
         manager.createTasks(task1);
@@ -88,22 +90,23 @@ class InMemoryTaskManagerTest {
 
     @Test
     public void checkHistoryAndCheckSizeHistory() {
+        Task testTask = manager.getTasksById(2);
         manager.getTasksById(1);
         manager.getEpicsById(7);
         manager.getSubTasksById(5);
         manager.getSubTasksById(4);
+        manager.getSubTasksById(4);
         manager.getSubTasksById(6);
         manager.getSubTasksById(10);
         manager.getSubTasksById(9);
-        manager.getSubTasksById(8);
-        manager.getEpicsById(3);
-        manager.getSubTasksById(4);
+        Task testTask1 = manager.getTasksById(1);
 
         List<Task> history = manager.getHistory();
-        assertEquals(manager.getTasksById(1), history.get(0), "Ошибка при соотвествии задач");
-        assertEquals(manager.getSubTasksById(10), history.get(5), "Ошибка при соответсвии задач");
+        assertEquals(testTask, history.get(0), "Ошибка при соотвествии задач1");
+        assertEquals(testTask1, history.get(9), "Ошибка при соответсвии задач2");
         assertEquals(10, manager.getHistory().size());
-        assertEquals(manager.getSubTasksById(4), history.get(9), "Ошибка при соответсвии задач");
+        Task testTask2 = manager.getEpicsById(3);
+        assertEquals(testTask2, manager.getHistory().get(9), "Ошибка при соответсвии задач3");
     }
 
     @Test
@@ -122,8 +125,8 @@ class InMemoryTaskManagerTest {
         assertSame(manager.getEpicsById(7).getStatus(), Status.DONE, "Ошибка при обновлении задачи");
     }
 
-    @AfterAll
-    static void checkDeleteTaskEpicSubTask() {
+     @Test
+     void checkDeleteTaskEpicSubTask() {
         manager.deleteAllTasks();
         manager.deleteAllSubTasks();
         manager.deleteAllEpics();

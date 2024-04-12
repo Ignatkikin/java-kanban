@@ -45,12 +45,13 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Task getTasksById(int id) {
-        historyManager.add(tasks.get(id));
-        return tasks.get(id);
+        Task task = tasks.get(id);
+        historyManager.add(task);
+        return task;
     }
 
     @Override
-    public ArrayList<Task> getAllTasks() {
+    public List<Task> getAllTasks() {
         return new ArrayList<>(tasks.values());
     }
 
@@ -80,12 +81,13 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Epic getEpicsById(int id) {
-        historyManager.add(epics.get(id));
-        return epics.get(id);
+        Epic epic = epics.get(id);
+        historyManager.add(epic);
+        return epic;
     }
 
     @Override
-    public ArrayList<Subtask> getSubTaskFromEpic(int id) {
+    public List<Subtask> getSubTaskFromEpic(int id) {
         Epic epic = epics.get(id);
         ArrayList<Subtask> subTaskList = new ArrayList<>();
         for (int sbId : epic.getSubtasksId()) {
@@ -95,7 +97,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public ArrayList<Epic> getAllEpics() {
+    public List<Epic> getAllEpics() {
         return new ArrayList<>(epics.values());
     }
 
@@ -132,12 +134,13 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Subtask getSubTasksById(int id) {
-        historyManager.add(subTasks.get(id));
-        return subTasks.get(id);
+        Subtask subtask = subTasks.get(id);
+        historyManager.add(subtask);
+        return subtask;
     }
 
     @Override
-    public ArrayList<Subtask> getAllSubTasks() {
+    public List<Subtask> getAllSubTasks() {
         return new ArrayList<>(subTasks.values());
     }
 
