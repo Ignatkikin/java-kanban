@@ -8,6 +8,7 @@ import tasks.Epic;
 import tasks.Status;
 import tasks.Subtask;
 import tasks.Task;
+
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -19,8 +20,8 @@ class InMemoryTaskManagerTest {
     @BeforeEach
     void creatingAndAddingTaskSubTaskEpic() {
         manager = Managers.getDefault();
-        Task task1 = new Task("Задача 1", "Выучить теорию 5 спринта");
-        Task task2 = new Task("Задача 2", "Сдать тз5");
+        Task task1 = new Task("Задача 1", "Выучить теорию 6 спринта");
+        Task task2 = new Task("Задача 2", "Сдать тз6");
         manager.createTasks(task1);
         manager.createTasks(task2);
 
@@ -49,8 +50,8 @@ class InMemoryTaskManagerTest {
     @Test
     public void cheakAddAllTasks() {
         assertFalse(manager.getAllTasks().isEmpty(), "Ошибка добавления задач");
-        assertFalse(manager.getAllEpics().isEmpty(),"Ошибка добавления Эпиков");
-        assertFalse(manager.getAllSubTasks().isEmpty(),"Ошибка добавления Сабтаск");
+        assertFalse(manager.getAllEpics().isEmpty(), "Ошибка добавления Эпиков");
+        assertFalse(manager.getAllSubTasks().isEmpty(), "Ошибка добавления Сабтаск");
     }
 
     @Test
@@ -94,19 +95,21 @@ class InMemoryTaskManagerTest {
         manager.getTasksById(1);
         manager.getEpicsById(7);
         manager.getSubTasksById(5);
-        manager.getSubTasksById(4);
+        Task testTask1 = manager.getSubTasksById(8);
         manager.getSubTasksById(4);
         manager.getSubTasksById(6);
         manager.getSubTasksById(10);
         manager.getSubTasksById(9);
-        Task testTask1 = manager.getTasksById(1);
+        Task testTask2 = manager.getTasksById(1);
 
         List<Task> history = manager.getHistory();
         assertEquals(testTask, history.get(0), "Ошибка при соотвествии задач1");
-        assertEquals(testTask1, history.get(9), "Ошибка при соответсвии задач2");
+        assertEquals(testTask1, history.get(3), "Ошибка при соответствии задач4");
+        assertEquals(testTask2, history.get(8), "Ошибка при соответсвии задач2");
+        assertEquals(9, manager.getHistory().size());
+        Task testTask3 = manager.getEpicsById(3);
+        assertEquals(testTask3, manager.getHistory().get(9), "Ошибка при соответсвии задач3");
         assertEquals(10, manager.getHistory().size());
-        Task testTask2 = manager.getEpicsById(3);
-        assertEquals(testTask2, manager.getHistory().get(9), "Ошибка при соответсвии задач3");
     }
 
     @Test
@@ -125,14 +128,29 @@ class InMemoryTaskManagerTest {
         assertSame(manager.getEpicsById(7).getStatus(), Status.DONE, "Ошибка при обновлении задачи");
     }
 
-     @Test
-     void checkDeleteTaskEpicSubTask() {
+    @Test
+    void checkDeleteTaskEpicSubTask() {
+        manager.getTasksById(1);
+        manager.getTasksById(2); //
+        manager.getSubTasksById(4); //
+        manager.getEpicsById(7);
+        manager.getSubTasksById(9);
+        manager.getEpicsById(3); //
+
+        assertEquals(6, manager.getHistory().size());
+        manager.deleteTasksById(2);
+        manager.deleteSubTasksById(4);
+        manager.deleteEpicsById(3);
+        assertEquals(3, manager.getHistory().size());
+
         manager.deleteAllTasks();
         manager.deleteAllSubTasks();
         manager.deleteAllEpics();
 
+        assertEquals(0, manager.getHistory().size());
+
         assertTrue(manager.getAllTasks().isEmpty(), "Ошибка при удалении всех Таск");
-        assertTrue(manager.getAllSubTasks().isEmpty(),"Ошибка при удалении всех СабТаск");
+        assertTrue(manager.getAllSubTasks().isEmpty(), "Ошибка при удалении всех СабТаск");
         assertTrue(manager.getAllEpics().isEmpty(), "Ошибка при удалении всех Эпик");
     }
 }
