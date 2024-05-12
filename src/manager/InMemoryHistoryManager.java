@@ -34,14 +34,12 @@ public class InMemoryHistoryManager implements HistoryManager {
                 head = next;
             } else {
                 prev.next = next;
-                removeNode.prev = null;
             }
 
             if (next == null) {
                 tail = prev;
             } else {
                 next.prev = prev;
-                removeNode.next = null;
             }
         }
     }
