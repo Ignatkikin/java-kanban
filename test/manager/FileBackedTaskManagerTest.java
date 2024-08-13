@@ -26,8 +26,7 @@ public class FileBackedTaskManagerTest {
     @BeforeEach
     void createTestFile() {
         try {
-            testFile = File.createTempFile("testFile", ".csv", new File("C:\\Java\\IdeaProjects" +
-                    "\\java-kanban\\testdata"));
+            testFile = File.createTempFile("testFile", ".csv");
         } catch (IOException e) {
             throw new ManagerSaveException("Ошибка при создании файла.");
         }
