@@ -44,13 +44,17 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
                 switch (task.getType()) {
                     case TASK:
-                        loader.createTasks(task);
+                        loader.tasks.put(task.getId(), task);
+                        loader.counter++;
                         break;
                     case EPIC:
-                        loader.createEpics((Epic) task);
+                        loader.epics.put(task.getId(), (Epic) task);
+                        loader.counter++;
                         break;
                     case SUBTASK:
-                        loader.createSubTasks((Subtask) task);
+                        loader.subTasks.put(task.getId(), (Subtask) task);
+                        loader.epics.get(((Subtask) task).getEpicId()).addSubtasksId(task.getId());
+                        loader.counter++;
                         break;
                 }
             }

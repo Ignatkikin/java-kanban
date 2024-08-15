@@ -31,6 +31,22 @@ public class FileBackedTaskManagerTest {
             throw new ManagerSaveException("Ошибка при создании файла.");
         }
     }
+    /*
+    Анна, привет! Забыл задать этот вопрос в первом ревью, вдруг сможешь помочь. Проблема следующая:
+    в ТЗ предлагают использовать такой метод File.createTempFile() для создания временных файлов.
+    Я провел первый тест и файл создался, я мог его открыть и посмотреть что в него записалось. После, я удалил этот
+    файл из папки (test) просто через Delete и он перестал мне показываться при проведении следующих тестов, то есть,
+    он создается, но я больше не вижу его в папке и не могу открыть для того, что бы посмотреть, как у меня записались
+    данные.
+    Наставник предложил создавать файл в другой папке testdata, Я делаю так:
+    testFile = File.createTempFile("testFile", ".csv", new File("C:\\Java\\" +
+                    "IdeaProjects\\java-kanban\\testdata"));
+    Таким способом файлы я вижу и могу их открывать и смотреть что в них. Но тесты в GitHub не пропускают этот метод.
+    Приходится возвращаться к File.createTempFile("testFile", ".csv").
+    Может я с чем то согласился в Idea при первом удалении файла через Delete? или это нормально что я его не вижу?
+    Этот метод testFile.deleteOnExit() я убираю)
+    Спасибо)
+     */
 
     @Test
     void creatingAndSavingTaskToFile() {
@@ -77,8 +93,8 @@ public class FileBackedTaskManagerTest {
             writer.write("id,type,name,status,desctiption,epic\n");
             writer.write("1,TASK,Задача 1,NEW,описание 1\n");
             writer.write("2,EPIC,Epic 1,NEW,авто\n");
-            writer.write("3,SUBTASK,SubTask 1,NEW,Поменять масло,2\n");
             writer.write("4,EPIC,Epic 2,NEW,море\n");
+            writer.write("3,SUBTASK,SubTask 1,NEW,Поменять масло,2\n");
             writer.write("5,SUBTASK,SubTask 2_1,NEW,билеты,4\n");
         } catch (IOException e) {
             throw new ManagerSaveException("Ошибка при запись в файл");
