@@ -100,7 +100,7 @@ public class FileBackedTaskManagerTest {
     }
 
     @AfterEach
-    void deleteTestFile()пш {
+    void deleteTestFile() {
         testFile.deleteOnExit();
     }
 }
