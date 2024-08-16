@@ -35,32 +35,35 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
     public static FileBackedTaskManager loadFromFile(File file) {
+        int maxId = 0;
         FileBackedTaskManager loader = new FileBackedTaskManager(file);
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             reader.readLine();
             while (reader.ready()) {
                 String line = reader.readLine();
                 Task task = fromString(line);
+                int taskId = task.getId();
+                if (taskId > maxId) {
+                    maxId = taskId;
+                }
 
                 switch (task.getType()) {
                     case TASK:
                         loader.tasks.put(task.getId(), task);
-                        loader.counter++;
                         break;
                     case EPIC:
                         loader.epics.put(task.getId(), (Epic) task);
-                        loader.counter++;
                         break;
                     case SUBTASK:
                         loader.subTasks.put(task.getId(), (Subtask) task);
                         loader.epics.get(((Subtask) task).getEpicId()).addSubtasksId(task.getId());
-                        loader.counter++;
                         break;
                 }
             }
         } catch (IOException e) {
             throw new ManagerSaveException("Ошибка при чтении их файла");
         }
+        loader.counter = maxId;
         return loader;
     }
 
