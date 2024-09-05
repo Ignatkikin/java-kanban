@@ -240,29 +240,29 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     public void checkEpicTime(Epic epic) { // в этом методе, попробывал исправить таким образом)
-       List<Task> sabTaskList = getPrioritizedTasks().stream()
-               .filter(t -> t.getType().equals(TaskType.SUBTASK)).
-               filter(t -> ((Subtask) t).getEpicId() == epic.getId())
-               .collect(Collectors.toList());
+        List<Task> sabTaskList = getPrioritizedTasks().stream()
+                .filter(t -> t.getType().equals(TaskType.SUBTASK)).
+                filter(t -> ((Subtask) t).getEpicId() == epic.getId())
+                .collect(Collectors.toList());
 
-       if (sabTaskList.isEmpty()) {
-           epic.setStartTime(null);
-           epic.setDuration(null);
-           epic.setEndTime(null);
-       } else {
-           LocalDateTime startTime = sabTaskList.get(0).getStartTime();
-           LocalDateTime endTime = sabTaskList.get(sabTaskList.size() - 1).getEndTime();
-           Duration duration = Duration.between(startTime, endTime);
-           epic.setStartTime(startTime);
-           epic.setEndTime(endTime);
-           epic.setDuration(duration);
-       }
+        if (sabTaskList.isEmpty()) {
+            epic.setStartTime(null);
+            epic.setDuration(null);
+            epic.setEndTime(null);
+        } else {
+            LocalDateTime startTime = sabTaskList.get(0).getStartTime();
+            LocalDateTime endTime = sabTaskList.get(sabTaskList.size() - 1).getEndTime();
+            Duration duration = Duration.between(startTime, endTime);
+            epic.setStartTime(startTime);
+            epic.setEndTime(endTime);
+            epic.setDuration(duration);
+        }
     }
 
     public void clearPrioritized(Task task) {
         List<Task> taskList = getPrioritizedTasks();
         if (taskList.contains(task)) {
-        prioritizedTasks.remove(task);
+            prioritizedTasks.remove(task);
         }
     }
 

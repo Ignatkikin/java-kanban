@@ -88,10 +88,10 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         Duration duration = null;
         LocalDateTime endTime = null;
         if (taskSplit.length > 6) {
-             startTime = LocalDateTime.parse(taskSplit[5]);
-             duration = Duration.parse(taskSplit[6]);
+            startTime = LocalDateTime.parse(taskSplit[5]);
+            duration = Duration.parse(taskSplit[6]);
             if (TaskType.EPIC == type) {
-                 endTime = LocalDateTime.parse(taskSplit[7]);
+                endTime = LocalDateTime.parse(taskSplit[7]);
             }
         }
 
