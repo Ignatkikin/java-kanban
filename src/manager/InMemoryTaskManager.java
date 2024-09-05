@@ -241,8 +241,8 @@ public class InMemoryTaskManager implements TaskManager {
 
     public void checkEpicTime(Epic epic) { // в этом методе, попробывал исправить таким образом)
         List<Task> sabTaskList = getPrioritizedTasks().stream()
-                .filter(t -> t.getType().equals(TaskType.SUBTASK)).
-                filter(t -> ((Subtask) t).getEpicId() == epic.getId())
+                .filter(t -> t.getType().equals(TaskType.SUBTASK))
+                .filter(t -> ((Subtask) t).getEpicId() == epic.getId())
                 .collect(Collectors.toList());
 
         if (sabTaskList.isEmpty()) {
