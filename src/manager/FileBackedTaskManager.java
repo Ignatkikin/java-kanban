@@ -8,7 +8,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
-    public static final String HEAD = "id,type,name,status,desctiption,epic,datatime,duration\n";
+    public static final String HEAD = "id,type,name,status,desctiption,starttime,duration,endtime,epic\n";
     private final File file;
 
     public FileBackedTaskManager(File file) {
@@ -52,6 +52,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 switch (task.getType()) {
                     case TASK:
                         loader.tasks.put(task.getId(), task);
+                        if (task.getStartTime() != null) {
+                            loader.addPrioritizedTask(task);
+                        }
                         break;
                     case EPIC:
                         loader.epics.put(task.getId(), (Epic) task);
@@ -59,6 +62,9 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                     case SUBTASK:
                         loader.subTasks.put(task.getId(), (Subtask) task);
                         loader.epics.get(((Subtask) task).getEpicId()).addSubtasksId(task.getId());
+                        if (task.getStartTime() != null) {
+                            loader.addPrioritizedTask(task);
+                        }
                         break;
                 }
             }
@@ -70,7 +76,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
 
-    public static Task fromString(String value) {
+    public static Task fromString(String value) {  // пока что вижу только такое решение)
         String[] taskSplit = value.split(",");
 
         int id = Integer.parseInt(taskSplit[0]);
@@ -78,27 +84,44 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         String name = taskSplit[2];
         Status status = Status.valueOf(taskSplit[3]);
         String description = taskSplit[4];
+        LocalDateTime startTime = null;
+        Duration duration = null;
+        LocalDateTime endTime = null;
+        if (taskSplit.length > 6) {
+             startTime = LocalDateTime.parse(taskSplit[5]);
+             duration = Duration.parse(taskSplit[6]);
+            if (TaskType.EPIC == type) {
+                 endTime = LocalDateTime.parse(taskSplit[7]);
+            }
+        }
 
         switch (type) {
             case EPIC:
+                if (startTime != null) {
+                    return new Epic(id, name, description, status, startTime,
+                            duration, endTime);
+                }
                 return new Epic(id, name, description, status);
             case SUBTASK:
-                int epicId = Integer.parseInt(taskSplit[5]);
-                if (taskSplit.length >= 7) {
+                if (startTime != null) {
+                    int epicId = Integer.parseInt(taskSplit[7]);
                     return new Subtask(id, name, description, status, epicId,
-                            LocalDateTime.parse(taskSplit[6]), Duration.parse(taskSplit[7]));
+                            startTime, duration);
                 }
+                int epicId = Integer.parseInt(taskSplit[5]);
                 return new Subtask(id, name, description, status, epicId);
             default:
-                if (taskSplit.length >= 6) {
+                if (startTime != null) {
                     return new Task(id, name, description, status,
-                            LocalDateTime.parse(taskSplit[5]), Duration.parse(taskSplit[6]));
+                            startTime, duration);
                 }
                 return new Task(id, name, description, status);
         }
     }
 
     public String toString(Task task) {
+        LocalDateTime startTime = task.getStartTime();
+        Duration duration = task.getDuration();
         StringBuilder sb = new StringBuilder();
         sb.append(task.getId())
                 .append(",")
@@ -110,16 +133,19 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 .append(",")
                 .append(task.getDescription());
 
+        if (startTime != null) {
+            sb.append(",")
+                    .append(startTime)
+                    .append(",")
+                    .append(duration);
+            if (task.getType() == TaskType.EPIC) {
+                sb.append(",")
+                        .append(task.getEndTime());
+            }
+        }
         if (task.getType() == TaskType.SUBTASK) {
             Subtask subtask = (Subtask) task;
             sb.append(",").append(subtask.getEpicId());
-        }
-        LocalDateTime startTime = task.getStartTime();
-        if (startTime != null) {
-            sb.append(",")
-                    .append(task.getStartTime())
-                    .append(",")
-                    .append(task.getDuration());
         }
         return sb.toString();
     }

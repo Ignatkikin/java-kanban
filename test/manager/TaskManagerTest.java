@@ -1,5 +1,6 @@
 package manager;
 
+import exceptions.OverlapTimeException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import tasks.Epic;
@@ -167,17 +168,17 @@ abstract class TaskManagerTest<T extends TaskManager> {
                 "Ошибка при расчете завершения эпика, после обновления Сабтаска");
         assertEquals(epic1.getDuration(), Duration.ofHours(30), "Ошибка при расчете продолжительности эпика");
 
-        Task task3 = new Task("Задача1", "Описание1", LocalDateTime.of(2024, 9, 3, 9, 10),
+        Task task3 = new Task("Задача1", "Описание1", LocalDateTime.of(2024, 9, 3, 9, 0),
                 Duration.ofHours(1));
-        Assertions.assertThrows(RuntimeException.class, () ->
+        Assertions.assertThrows(OverlapTimeException.class, () ->
                         taskManager.createTasks(task3),
                 "Задача не может быть добавлена, пересечение по времени");
 
         Subtask subtask4 = new Subtask("Подзадача3", "Описание подзадачи3", Status.NEW,
-                LocalDateTime.of(2025, 10, 11, 18, 59), Duration.ofHours(3), epicId);
-        subtask3.setId(5);
+                LocalDateTime.of(2025, 10, 11, 19, 0), Duration.ofHours(3), epicId);
 
-        Assertions.assertThrows(RuntimeException.class, () ->
+
+        Assertions.assertThrows(OverlapTimeException.class, () ->
                         taskManager.createSubTasks(subtask4),
                 "Подзадача не может быть добавлена, пересечение по времени");
     }

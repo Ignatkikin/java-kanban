@@ -54,15 +54,25 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
                 LocalDateTime.of(2020, 10, 10, 10, 0), Duration.ofHours(1));
         manager.createTasks(taskTime);
 
+        Subtask subtask3 = new Subtask("Подзадача3", "Описание3", Status.NEW,
+                LocalDateTime.of(2022, 10, 10, 13, 0), Duration.ofHours(2), idEpic2);
+        Subtask subtask4 = new Subtask("Подзадача4", "Описание4", Status.NEW,
+                LocalDateTime.of(2022, 10, 10, 17, 0), Duration.ofHours(4), idEpic2);
+        manager.createSubTasks(subtask3);
+        manager.createSubTasks(subtask4);
+
+
         List<String> list1 = new ArrayList<>();
 
-        list1.add("id,type,name,status,desctiption,epic,datatime,duration");
+        list1.add("id,type,name,status,desctiption,starttime,duration,endtime,epic");
         list1.add("1,TASK,Задача 1,NEW,описание 1");
         list1.add("6,TASK,Задача,NEW,Смотрим,2020-10-10T10:00,PT1H");
         list1.add("2,EPIC,Epic 1,NEW,авто");
-        list1.add("4,EPIC,Epic 2,NEW,море");
+        list1.add("4,EPIC,Epic 2,NEW,море,2022-10-10T13:00,PT8H,2022-10-10T21:00");
         list1.add("3,SUBTASK,SubTask 1,NEW,Поменять масло,2");
         list1.add("5,SUBTASK,SubTask 2_1,NEW,билеты,4");
+        list1.add("7,SUBTASK,Подзадача3,NEW,Описание3,2022-10-10T13:00,PT2H,4");
+        list1.add("8,SUBTASK,Подзадача4,NEW,Описание4,2022-10-10T17:00,PT4H,4");
 
 
         List<String> list2 = new ArrayList<>();
@@ -81,13 +91,15 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
     @Test
     void testLoadFromFile() {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(testFile, StandardCharsets.UTF_8))) {
-            writer.write("id,type,name,status,desctiption,epic,datatime,duration\n");
+            writer.write("id,type,name,status,desctiption,starttime,duration,endtime,epic\n");
             writer.write("1,TASK,Задача 1,NEW,описание 1\n");
             writer.write("2,EPIC,Epic 1,NEW,авто\n");
-            writer.write("4,EPIC,Epic 2,NEW,море\n");
+            writer.write("4,EPIC,Epic 2,NEW,море,2022-10-10T13:00,PT8H,2022-10-10T21:00\n");
             writer.write("3,SUBTASK,SubTask 1,NEW,Поменять масло,2\n");
             writer.write("5,SUBTASK,SubTask 2_1,NEW,билеты,4\n");
             writer.write("6,TASK,Задача,NEW,Смотрим,2020-10-10T10:00,PT1H\n");
+            writer.write("7,SUBTASK,Подзадача3,NEW,Описание3,2022-10-10T13:00,PT2H,4\n");
+            writer.write("8,SUBTASK,Подзадача4,NEW,Описание4,2022-10-10T17:00,PT4H,4\n");
         } catch (IOException e) {
             throw new ManagerSaveException("Ошибка при запись в файл");
         }

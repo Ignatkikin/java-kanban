@@ -5,12 +5,12 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Task {
-    protected String name;
-    protected String description;
-    protected Status status;
-    protected int id;
-    protected LocalDateTime startTime;
-    protected Duration duration;
+    private String name;
+    private String description;
+    private Status status;
+    private int id;
+    private LocalDateTime startTime;
+    private Duration duration;
 
 
     public Task(String name, String description) {
@@ -110,7 +110,11 @@ public class Task {
     }
 
     public LocalDateTime getEndTime() {
-        return startTime.plus(duration);
+        if (startTime == null || duration == null) {
+            return null;
+        } else {
+            return startTime.plus(duration);
+        }
     }
 
 
