@@ -84,58 +84,38 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         String name = taskSplit[2];
         Status status = Status.valueOf(taskSplit[3]);
         String description = taskSplit[4];
-        LocalDateTime startTime = null;
-        Duration duration = null;
-        LocalDateTime endTime = null;
-        if (taskSplit.length > 6) {
-            startTime = parseDateTime(taskSplit[5]);
-            duration = parseDuration(taskSplit[6]);
-            if (TaskType.EPIC == type) {
-                endTime = parseDateTime(taskSplit[7]);
-            }
-        }
-
+        LocalDateTime startTime = parseDateTime(taskSplit[5]);
+        Duration duration = parseDuration(taskSplit[6]);
+        LocalDateTime endTime = parseDateTime(taskSplit[7]);
         switch (type) {
             case EPIC:
-                if (startTime != null) {
-                    return new Epic(id, name, description, status, startTime,
-                            duration, endTime);
-                }
-                return new Epic(id, name, description, status);
+                return new Epic(id, name, description, status, startTime,
+                        duration, endTime);
             case SUBTASK:
-                if (startTime != null) {
-                    int epicId = Integer.parseInt(taskSplit[7]);
-                    return new Subtask(id, name, description, status, epicId,
-                            startTime, duration);
-                }
-                int epicId = Integer.parseInt(taskSplit[5]);
-                return new Subtask(id, name, description, status, epicId);
+                int epicId = Integer.parseInt(taskSplit[8]);
+                return new Subtask(id, name, description, status, epicId,
+                        startTime, duration);
             default:
-                if (startTime != null) {
-                    return new Task(id, name, description, status,
-                            startTime, duration);
-                }
-                return new Task(id, name, description, status);
+                return new Task(id, name, description, status,
+                        startTime, duration);
         }
     }
 
     public static LocalDateTime parseDateTime(String date) {
-        if (date.equals(null)) {
+        if (date.equals("null")) {
             return null;
         }
         return LocalDateTime.parse(date);
     }
 
     public static Duration parseDuration(String duration) {
-        if (duration.equals(null)) {
+        if (duration.equals("null")) {
             return null;
         }
         return Duration.parse(duration);
     }
 
     public String toString(Task task) {
-        LocalDateTime startTime = task.getStartTime();
-        Duration duration = task.getDuration();
         StringBuilder sb = new StringBuilder();
         sb.append(task.getId())
                 .append(",")
@@ -145,18 +125,14 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 .append(",")
                 .append(task.getStatus())
                 .append(",")
-                .append(task.getDescription());
+                .append(task.getDescription())
+                .append(",")
+                .append(task.getStartTime())
+                .append(",")
+                .append(task.getDuration())
+                .append(",")
+                .append(task.getEndTime());
 
-        if (startTime != null) {
-            sb.append(",")
-                    .append(startTime)
-                    .append(",")
-                    .append(duration);
-            if (task.getType() == TaskType.EPIC) {
-                sb.append(",")
-                        .append(task.getEndTime());
-            }
-        }
         if (task.getType() == TaskType.SUBTASK) {
             Subtask subtask = (Subtask) task;
             sb.append(",").append(subtask.getEpicId());
