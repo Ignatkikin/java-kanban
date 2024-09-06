@@ -76,7 +76,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
     }
 
 
-    public static Task fromString(String value) {  // пока что вижу только такое решение)
+    public static Task fromString(String value) {
         String[] taskSplit = value.split(",");
 
         int id = Integer.parseInt(taskSplit[0]);
@@ -88,10 +88,10 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         Duration duration = null;
         LocalDateTime endTime = null;
         if (taskSplit.length > 6) {
-            startTime = LocalDateTime.parse(taskSplit[5]);
-            duration = Duration.parse(taskSplit[6]);
+            startTime = parseDateTime(taskSplit[5]);
+            duration = parseDuration(taskSplit[6]);
             if (TaskType.EPIC == type) {
-                endTime = LocalDateTime.parse(taskSplit[7]);
+                endTime = parseDateTime(taskSplit[7]);
             }
         }
 
@@ -117,6 +117,20 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
                 }
                 return new Task(id, name, description, status);
         }
+    }
+
+    public static LocalDateTime parseDateTime(String date) {
+        if (date.equals(null)) {
+            return null;
+        }
+        return LocalDateTime.parse(date);
+    }
+
+    public static Duration parseDuration(String duration) {
+        if (duration.equals(null)) {
+            return null;
+        }
+        return Duration.parse(duration);
     }
 
     public String toString(Task task) {

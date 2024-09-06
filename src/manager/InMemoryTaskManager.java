@@ -30,7 +30,7 @@ public class InMemoryTaskManager implements TaskManager {
         return historyManager.getHistory();
     }
 
-    public void addPrioritizedTask(Task task) { // исправил на такое решение, твой вариант реализовать не смог...)
+    public void addPrioritizedTask(Task task) {
         boolean isOverlap = prioritizedTasks.stream()
                 .filter(t -> t.getId() != task.getId())
                 .anyMatch(t -> (!(task.getStartTime().isAfter(t.getEndTime()) ||
@@ -239,7 +239,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    public void checkEpicTime(Epic epic) { // в этом методе, попробывал исправить таким образом)
+    public void checkEpicTime(Epic epic) {
         List<Task> sabTaskList = getPrioritizedTasks().stream()
                 .filter(t -> t.getType().equals(TaskType.SUBTASK))
                 .filter(t -> ((Subtask) t).getEpicId() == epic.getId())
