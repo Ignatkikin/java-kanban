@@ -17,7 +17,7 @@ public class HttpTaskServer {
     private static final int PORT = 8080;
     private HttpServer httpServer;
     private TaskManager taskManager;
-    private final static Gson gson = new GsonBuilder()
+    private Gson gson = new GsonBuilder()
             .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
             .registerTypeAdapter(Duration.class, new DurationAdapter())
             .create();
