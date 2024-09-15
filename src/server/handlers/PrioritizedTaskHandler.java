@@ -17,9 +17,9 @@ public class PrioritizedTaskHandler extends BaseHttpHandler implements HttpHandl
     @Override
     public void handle(HttpExchange exchange) throws IOException {
         if (exchange.getRequestMethod().equals("GET")) {
-            List<Task> history = taskManager.getPrioritizedTasks();
-            if (!history.isEmpty()) {
-                String historyJson = gson.toJson(history);
+            List<Task> prioritizedTask = taskManager.getPrioritizedTasks();
+            if (!prioritizedTask.isEmpty()) {
+                String historyJson = gson.toJson(prioritizedTask);
                 sendText(exchange, historyJson, 200);
             } else {
                 sendNotFound(exchange);

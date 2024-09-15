@@ -2,6 +2,7 @@ package server.handlers;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import exceptions.NotFoundException;
 import exceptions.OverlapTimeException;
 import manager.TaskManager;
 import tasks.Subtask;
@@ -27,9 +28,10 @@ public class SubtaskHandler extends BaseHttpHandler implements HttpHandler {
                     sendText(exchange, gson.toJson(taskManager.getAllSubTasks()), 200);
                 } else {
                     try {
-                        Subtask subtask = taskManager.getSubTasksById(Integer.parseInt(path[2]));
+                        int subtaskId = Integer.parseInt(path[2]);
+                        Subtask subtask = taskManager.getSubTasksById(subtaskId);
                         sendText(exchange, gson.toJson(subtask), 200);
-                    } catch (RuntimeException e) {
+                    } catch (NotFoundException e) {
                         sendNotFound(exchange);
                     }
                 }
@@ -42,23 +44,28 @@ public class SubtaskHandler extends BaseHttpHandler implements HttpHandler {
                 if (path.length <= 2) {
                     try {
                         Subtask subtask = gson.fromJson(body, Subtask.class);
-                        taskManager.createSubTasks(subtask);
-                        sendNoText(exchange, 201);
+                        if (subtask != null) {
+                            taskManager.createSubTasks(subtask);
+                            sendNoText(exchange, 201);
+                        } else {
+                            sendText(exchange, "пустая задача", 400);
+                        }
                     } catch (OverlapTimeException e) {
                         sendHasInteractions(exchange);
-                    } catch (NullPointerException e) {
-                        sendText(exchange, "пустая задача", 400);
                     }
                 } else {
                     try {
                         Subtask subtask = gson.fromJson(body, Subtask.class);
-                        subtask.setId(Integer.parseInt(path[2]));
-                        taskManager.updateSubTasks(subtask);
-                        sendNoText(exchange, 201);
+                        if (subtask != null) {
+                            int subtaskId = Integer.parseInt(path[2]);
+                            subtask.setId(subtaskId);
+                            taskManager.updateSubTasks(subtask);
+                            sendNoText(exchange, 201);
+                        } else {
+                            sendText(exchange, "пустая задача", 400);
+                        }
                     } catch (OverlapTimeException e) {
                         sendHasInteractions(exchange);
-                    } catch (NullPointerException e) {
-                        sendText(exchange, "пустая задача", 400);
                     }
                 }
                 break;
@@ -66,9 +73,10 @@ public class SubtaskHandler extends BaseHttpHandler implements HttpHandler {
             case "DELETE": {
                 try {
                     String[] path = exchange.getRequestURI().getPath().split("/");
-                    taskManager.deleteSubTasksById(Integer.parseInt(path[2]));
+                    int subtaskId = Integer.parseInt(path[2]);
+                    taskManager.deleteSubTasksById(subtaskId);
                     sendText(exchange, "Сабтаск успешно удален", 200);
-                } catch (NumberFormatException | NullPointerException e) {
+                } catch (NumberFormatException e) {
                     sendNotFound(exchange);
                 }
                 break;

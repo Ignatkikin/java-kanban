@@ -40,9 +40,6 @@ public class EpicHandlerTest {
                 .registerTypeAdapter(Duration.class, new DurationAdapter())
                 .create();
         server.start();
-        manager.deleteAllTasks();
-        manager.deleteAllEpics();
-        manager.deleteAllSubTasks();
     }
 
     @Test

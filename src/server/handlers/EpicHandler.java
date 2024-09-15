@@ -2,6 +2,7 @@ package server.handlers;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import exceptions.NotFoundException;
 import exceptions.OverlapTimeException;
 import manager.TaskManager;
 import tasks.Epic;
@@ -26,15 +27,17 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
                     sendText(exchange, gson.toJson(taskManager.getAllEpics()), 200);
                 } else if (path.length == 3) {
                     try {
-                        Epic epic = taskManager.getEpicsById(Integer.parseInt(path[2]));
+                        int epicId = Integer.parseInt(path[2]);
+                        Epic epic = taskManager.getEpicsById(epicId);
                         sendText(exchange, gson.toJson(epic), 200);
-                    } catch (RuntimeException e) {
+                    } catch (NotFoundException e) {
                         sendNotFound(exchange);
                     }
                 } else {
                     try {
-                        sendText(exchange, gson.toJson(taskManager.getSubTaskFromEpic(Integer.parseInt(path[2]))), 200);
-                    } catch (RuntimeException e) {
+                        int subtaskId = Integer.parseInt(path[2]);
+                        sendText(exchange, gson.toJson(taskManager.getSubTaskFromEpic(subtaskId)), 200);
+                    } catch (NotFoundException e) {
                         sendNotFound(exchange);
                     }
                 }
@@ -46,23 +49,28 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
                 if (path.length <= 2) {
                     try {
                         Epic epic = gson.fromJson(body, Epic.class);
-                        taskManager.createEpics(epic);
-                        sendNoText(exchange, 201);
+                        if (epic != null) {
+                            taskManager.createEpics(epic);
+                            sendNoText(exchange, 201);
+                        } else {
+                            sendText(exchange, "пустая задача", 400);
+                        }
                     } catch (OverlapTimeException e) {
                         sendHasInteractions(exchange);
-                    } catch (NullPointerException e) {
-                        sendText(exchange, "пустая задача", 400);
                     }
                 } else {
                     try {
                         Epic epic = gson.fromJson(body, Epic.class);
-                        epic.setId(Integer.parseInt(path[2]));
-                        taskManager.updateEpics(epic);
-                        sendNoText(exchange, 201);
+                        if (epic != null) {
+                            int epicId = Integer.parseInt(path[2]);
+                            epic.setId(epicId);
+                            taskManager.updateEpics(epic);
+                            sendNoText(exchange, 201);
+                        } else {
+                            sendText(exchange, "пустая задача", 400);
+                        }
                     } catch (OverlapTimeException e) {
                         sendHasInteractions(exchange);
-                    } catch (NullPointerException e) {
-                        sendText(exchange, "пустая задача", 400);
                     }
                 }
                 break;
@@ -70,9 +78,10 @@ public class EpicHandler extends BaseHttpHandler implements HttpHandler {
             case "DELETE": {
                 try {
                     String[] path = exchange.getRequestURI().getPath().split("/");
-                    taskManager.deleteEpicsById(Integer.parseInt(path[2]));
+                    int epicId = Integer.parseInt(path[2]);
+                    taskManager.deleteEpicsById(epicId);
                     sendText(exchange, "Эпик успешно удален", 200);
-                } catch (NumberFormatException | NullPointerException e) {
+                } catch (NumberFormatException e) {
                     sendNotFound(exchange);
                 }
                 break;

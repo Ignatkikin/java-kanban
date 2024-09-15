@@ -41,9 +41,6 @@ public class SubtaskHandlerTest {
                 .registerTypeAdapter(Duration.class, new DurationAdapter())
                 .create();
         server.start();
-        manager.deleteAllTasks();
-        manager.deleteAllEpics();
-        manager.deleteAllSubTasks();
     }
 
     @Test

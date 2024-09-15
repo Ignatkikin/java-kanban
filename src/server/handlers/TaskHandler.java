@@ -3,6 +3,7 @@ package server.handlers;
 
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
+import exceptions.NotFoundException;
 import exceptions.OverlapTimeException;
 import manager.TaskManager;
 import tasks.Task;
@@ -27,9 +28,10 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
                     sendText(exchange, gson.toJson(taskManager.getAllTasks()), 200);
                 } else {
                     try {
-                        Task task = taskManager.getTasksById(Integer.parseInt(path[2]));
+                        int taskId = Integer.parseInt(path[2]);
+                        Task task = taskManager.getTasksById(taskId);
                         sendText(exchange, gson.toJson(task), 200);
-                    } catch (RuntimeException e) {
+                    } catch (NotFoundException e) {
                         sendNotFound(exchange);
                     }
                 }
@@ -42,23 +44,28 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
                 if (path.length <= 2) {
                     try {
                         Task task = gson.fromJson(body, Task.class);
-                        taskManager.createTasks(task);
-                        sendNoText(exchange, 201);
+                        if (task != null) {
+                            taskManager.createTasks(task);
+                            sendNoText(exchange, 201);
+                        } else {
+                            sendText(exchange, "пустая задача", 400);
+                        }
                     } catch (OverlapTimeException e) {
                         sendHasInteractions(exchange);
-                    } catch (NullPointerException e) {
-                        sendText(exchange, "пустая задача", 400);
                     }
                 } else {
                     try {
                         Task task = gson.fromJson(body, Task.class);
-                        task.setId(Integer.parseInt(path[2]));
-                        taskManager.updateTasks(task);
-                        sendNoText(exchange, 201);
+                        if (task != null) {
+                            int taskId = Integer.parseInt(path[2]);
+                            task.setId(taskId);
+                            taskManager.updateTasks(task);
+                            sendNoText(exchange, 201);
+                        } else {
+                            sendText(exchange, "пустая задача", 400);
+                        }
                     } catch (OverlapTimeException e) {
                         sendHasInteractions(exchange);
-                    } catch (NullPointerException e) {
-                        sendText(exchange, "пустая задача", 400);
                     }
                 }
                 break;
@@ -66,9 +73,10 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
             case "DELETE": {
                 try {
                     String[] path = exchange.getRequestURI().getPath().split("/");
-                    taskManager.deleteTasksById(Integer.parseInt(path[2]));
+                    int taskId = Integer.parseInt(path[2]);
+                    taskManager.deleteTasksById(taskId);
                     sendText(exchange, "Задача успешна удалена", 200);
-                } catch (NumberFormatException | NullPointerException e) {
+                } catch (NumberFormatException e) {
                     sendNotFound(exchange);
                 }
                 break;
