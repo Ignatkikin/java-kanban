@@ -66,6 +66,8 @@ public class TaskHandler extends BaseHttpHandler implements HttpHandler {
                         }
                     } catch (OverlapTimeException e) {
                         sendHasInteractions(exchange);
+                    } catch (NotFoundException e) {
+                        sendNotFound(exchange);
                     }
                 }
                 break;
