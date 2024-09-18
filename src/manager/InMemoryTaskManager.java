@@ -1,5 +1,6 @@
 package manager;
 
+import exceptions.NotFoundException;
 import exceptions.OverlapTimeException;
 import tasks.*;
 
@@ -59,12 +60,17 @@ public class InMemoryTaskManager implements TaskManager {
                 addPrioritizedTask(task);
             }
             tasks.put(task.getId(), task);
+        } else {
+            throw new NotFoundException();
         }
     }
 
     @Override
     public Task getTasksById(int id) {
         Task task = tasks.get(id);
+        if (task == null) {
+            throw new NotFoundException();
+        }
         historyManager.add(task);
         return task;
     }
@@ -100,12 +106,17 @@ public class InMemoryTaskManager implements TaskManager {
         if (epics.containsKey(epic.getId())) {
             epics.get(epic.getId()).setName(epic.getName());
             epics.get(epic.getId()).setDescription(epic.getDescription());
+        } else {
+            throw new NotFoundException();
         }
     }
 
     @Override
     public Epic getEpicsById(int id) {
         Epic epic = epics.get(id);
+        if (epic == null) {
+            throw new NotFoundException();
+        }
         historyManager.add(epic);
         return epic;
     }
@@ -113,6 +124,9 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public List<Subtask> getSubTaskFromEpic(int id) {
         Epic epic = epics.get(id);
+        if (epic == null) {
+            throw new NotFoundException();
+        }
         ArrayList<Subtask> subTaskList = new ArrayList<>();
         for (int sbId : epic.getSubtasksId()) {
             subTaskList.add(subTasks.get(sbId));
@@ -172,12 +186,17 @@ public class InMemoryTaskManager implements TaskManager {
             subTasks.put(subtask.getId(), subtask);
             checkEpicStatus(epics.get(subtask.getEpicId()));
             checkEpicTime(epics.get(subtask.getEpicId()));
+        } else {
+            throw new NotFoundException();
         }
     }
 
     @Override
     public Subtask getSubTasksById(int id) {
         Subtask subtask = subTasks.get(id);
+        if (subtask == null) {
+            throw new NotFoundException();
+        }
         historyManager.add(subtask);
         return subtask;
     }
